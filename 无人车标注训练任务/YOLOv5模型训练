@@ -6,8 +6,8 @@ train.run(
     data='data.yaml',  # 数据集配置文件路径
     cfg='models/yolov5s.yaml',  # 模型配置文件路径
     weights='yolov5s.pt',  # 预训练权重文件路径
-    batch_size=16,
-    epochs=300,
+    batch_size=32,
+    epochs=100,
     imgsz=640,
-    device='cuda'  # 使用GPU训练
+    device='cuda' 
 )
