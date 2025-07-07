@@ -1,0 +1,29 @@
+import os
+import xml.etree.ElementTree as ET
+
+def convert_annotation(xml_file, txt_file, classes):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    with open(txt_file, 'w') as f:
+        for obj in root.iter('object'):
+            cls = obj.find('name').text
+            if cls not in classes:
+                continue
+            cls_id = classes.index(cls)
+            xmlbox = obj.find('bbox')
+            b = (float(xmlbox.find('xmin').text), float(xmlbox.find('ymin').text),
+                 float(xmlbox.find('xmax').text), float(xmlbox.find('ymax').text))
+            f.write(f"{cls_id} {b[0]} {b[1]} {b[2]} {b[3]}\n")
+
+def convert_dataset(xml_dir, txt_dir, classes):
+    if not os.path.exists(txt_dir):
+        os.makedirs(txt_dir)
+    for xml_file in os.listdir(xml_dir):
+        if xml_file.endswith('.xml'):
+            txt_file = os.path.join(txt_dir, xml_file.replace('.xml', '.txt'))
+            xml_file_path = os.path.join(xml_dir, xml_file)
+            convert_annotation(xml_file_path, txt_file, classes)
+
+# 示例：转换数据集
+classes = ['stop', 'yield', 'speed_limit']  # 根据实际类别修改
+convert_dataset('annotations', 'labels', classes)

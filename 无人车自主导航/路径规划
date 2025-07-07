@@ -1,0 +1,23 @@
+<launch>
+    <!-- 设置地图的配置文件 -->
+    <arg name="map" default="test01.yaml" />
+
+    <!-- 运行地图服务器，并加载设置的地图 -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find nav_demo)/map/$(arg map)"/>
+
+    <!-- 启动 AMCL 定位 -->
+    <include file="$(find nav_demo)/launch/amcl.launch" />
+
+    <!-- 启动 move_base -->
+    <node pkg="move_base" type="move_base" name="move_base" output="screen">
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
+        <param name="global_planner" value="navfn/NavfnROS"/>
+        <rosparam file="$(find nav_demo)/config/costmap_common_params.yaml" command="load"/>
+        <rosparam file="$(find nav_demo)/config/local_costmap_params.yaml" command="load"/>
+        <rosparam file="$(find nav_demo)/config/global_costmap_params.yaml" command="load"/>
+        <rosparam file="$(find nav_demo)/config/dwa_local_planner_params.yaml" command="load"/>
+    </node>
+
+    <!-- 启动 Rviz 可视化工具 -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav_demo)/config/navigation.rviz"/>
+</launch>
